@@ -28,35 +28,6 @@ export class FlightEditComponent {
     private titleService: Title
   ) {}
 
-  // ngOnInit(): void {
-  //   console.log(this.editMode)
-  //   this.obs = this.route.paramMap
-  //     .pipe(
-  //       switchMap((params) => {
-  //         console.log(params.get('id'))
-  //         this.id = Number(params.get('id'));
-  //         this.editMode = params.get('id') != null;
-  //         return this.flightService.getFlightById(this.id);
-  //       })
-  //     );
-  //   // this.obs.subscribe();
-  //   if (this.editMode){
-  //     this.obs.subscribe((flight: Flight) => {
-  //       this.flight = flight;
-  //       if (this.editMode) {
-  //         this.titleService.setTitle(
-  //           `${this.flight.numerLotu}: ${this.flight.miejsceWylotu} -> ${this.flight.miejscePrzylotu}`
-  //         );
-  //       } else {
-  //         this.titleService.setTitle(`New Flight`);
-  //       }
-  //       this.initForm();
-  //     });
-  //   }else{
-  //     this.obs.subscribe(() => this.initForm());
-  //   }
-  // }
-
   ngOnInit() {
     this.route.params.subscribe((params: Params) => {
       this.id = +params['id'];
