@@ -2,6 +2,9 @@
   <br />
   <div class="row">
     <div class="col-xs-12">
+      <div class="alert alert-danger" *ngIf="error">
+        <p>{{ error }}</p>
+      </div>
       <div class="btn-group">
         <button
           type="button"

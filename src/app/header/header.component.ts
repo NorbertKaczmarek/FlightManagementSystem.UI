@@ -20,8 +20,6 @@ export class HeaderComponent {
       this.isAuthenticated = !!token;  // !token ? false : true; 
       // console.log(token)
     });
-    
-    this.authService.autoLogin();
   }
 
   ngOnDestroy(): void {

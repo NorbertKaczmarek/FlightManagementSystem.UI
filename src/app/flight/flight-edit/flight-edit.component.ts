@@ -17,6 +17,7 @@ export class FlightEditComponent {
   flight?: Flight = null;
   editMode = false;
   flightForm: FormGroup;
+  error: string = null;
 
   obs: Observable<any>;
 
@@ -77,50 +78,30 @@ export class FlightEditComponent {
     });
   }
 
-  // ngOnInit(): void {
-  //   this.route.paramMap
-  //     .pipe(
-  //       switchMap((params) => {
-  //         this.id = Number(params.get('id'));
-  //         this.editMode = params.get('id') != null;
-  //         if (this.editMode) {
-  //           return this.flightService.getFlightById(this.id);
-  //         }
-  //       })
-  //     )
-  //     .subscribe((flight: Flight) => {
-  //       this.flight = flight;
-  //       this.initForm();
-
-  //       if (this.editMode) {
-  //         this.titleService.setTitle(
-  //           `${this.flight.numerLotu}: ${this.flight.miejsceWylotu} -> ${this.flight.miejscePrzylotu}`
-  //         );
-  //       } else {
-  //         this.titleService.setTitle(`New Flight`);
-  //       }
-  //     });
-  // }
-
   onSubmit() {
     if (this.editMode) {
       this.flightService
         .updateFlightWithId(this.id, this.flightForm.value)
-        .subscribe(() => {
-          // this.router.navigate(["../../"], {relativeTo: this.route})
-          // console.log(this.router.url)
-          // this.router.navigateByUrl(`${this.router.url}`)
-          this.flightService.notifyOther({ refresh: true });
-          this.onCancel();
-        });
+        .subscribe(
+          () => {
+            this.flightService.notifyOther({ refresh: true });
+            this.onCancel();
+          },
+          (errorMessage: Error) => {
+            this.error = errorMessage.message;
+          }
+        );
     } else {
-      this.flightService
-        .createFlight(this.flightForm.value)
-        .subscribe((res: HttpResponse<any>) => {
+      this.flightService.createFlight(this.flightForm.value).subscribe(
+        (res: HttpResponse<any>) => {
           let createdIdString: string = res.headers.get('location');
           this.router.navigate([createdIdString]);
           this.flightService.notifyOther({ refresh: true });
-        });
+        },
+        (errorMessage: Error) => {
+          this.error = errorMessage.message;
+        }
+      );
     }
   }
 
@@ -168,7 +149,16 @@ export class FlightEditComponent {
   onFeedTestData() {
     this.flightForm = new FormGroup({
       numerLotu: new FormControl(Math.floor(Math.random() * 100)),
-      dataWylotu: new FormControl(''),
+      dataWylotu: new FormControl(
+        new Date(
+          2024,
+          Math.floor(Math.random() * 12),
+          Math.floor(Math.random() * 30),
+          Math.floor(Math.random() * 24),
+          Math.floor(Math.random() * 60),
+          Math.floor(Math.random() * 60)
+        ).toISOString()
+      ),
       miejsceWylotu: new FormControl(
         'Miejsce wylotu ' + Math.floor(Math.random() * 100)
       ),

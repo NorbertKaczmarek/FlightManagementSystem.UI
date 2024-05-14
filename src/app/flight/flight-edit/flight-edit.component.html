@@ -1,6 +1,9 @@
 <div *ngIf="flightForm">
   <div class="row">
     <div class="col-xs-12">
+      <div class="alert alert-danger" *ngIf="error">
+        <p>{{ error }}</p>
+      </div>
       <form [formGroup]="flightForm" (ngSubmit)="onSubmit()">
         <div class="row">
           <div class="col-xs-12">

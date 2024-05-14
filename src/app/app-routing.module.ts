@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ResolveFn, RouterModule, Routes } from '@angular/router';
+import { PreloadAllModules, ResolveFn, RouterModule, Routes } from '@angular/router';
 import { FlightComponent } from './flight/flight.component';
 import { FlightEditComponent } from './flight/flight-edit/flight-edit.component';
 import { FlightStartComponent } from './flight/flight-start/flight-start.component';
@@ -11,8 +11,6 @@ import { LoginComponent } from './auth/login/login.component';
 import { SignupComponent } from './auth/signup/signup.component';
 import { AccountComponent } from './auth/account/account.component';
 
-const resolvedChildATitle: ResolveFn<string> = () => Promise.resolve('child a');
-
 const appRoutes: Routes = [
   // {
   //   path: "",
@@ -21,39 +19,14 @@ const appRoutes: Routes = [
   // },
   { path: '', redirectTo: '/flight', pathMatch: 'full' },
   {
+    path: '',
+    loadChildren: () =>
+      import('./auth/auth.module').then((m) => m.AuthModule),
+  },
+  {
     path: 'flight',
-    title: 'flight',
-    component: FlightComponent,
-    children: [
-      { path: '', component: FlightStartComponent },
-      { path: 'new', component: FlightEditComponent },
-      {
-        path: ':id',
-        title: resolvedChildATitle,
-        component: FlightDetailComponent,
-        // resolve: [FlightsResolverService],
-      },
-      {
-        path: ':id/edit',
-        component: FlightEditComponent,
-        // resolve: [FlightsResolverService],
-      },
-    ]
-  },
-  {
-    path: "login",
-    title: "Login",
-    component: LoginComponent
-  },
-  {
-    path: "signup",
-    title: "Signup",
-    component: SignupComponent
-  },
-  {
-    path: "account",
-    title: "Account",
-    component: AccountComponent
+    loadChildren: () =>
+      import('./flight/flight.module').then((m) => m.FlightModule),
   },
   { path: '**', component: PageNotFoundComponent }, // Wildcard route for a 404 page
 ];
@@ -62,7 +35,7 @@ const appRoutes: Routes = [
   declarations: [],
   imports: [
     CommonModule,
-    RouterModule.forRoot(appRoutes),
+    RouterModule.forRoot(appRoutes, { preloadingStrategy: PreloadAllModules }),
   ],
   exports: [RouterModule],
 })

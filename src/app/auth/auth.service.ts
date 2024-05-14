@@ -1,12 +1,13 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, tap, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { User } from './user.model';
+import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   private url = 'auth';
@@ -15,27 +16,20 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  signup(email: string, fullName: string, password: string, confirmPassword: string) {
-    return this.http.post<any>( 
-      `${environment.apiUrl}/${this.url}/signup`,
-      {
+  signup(
+    email: string,
+    fullName: string,
+    password: string,
+    confirmPassword: string
+  ) {
+    return this.http
+      .post<any>(`${environment.apiUrl}/${this.url}/signup`, {
         email: email,
         fullName: fullName,
         password: password,
-        confirmPassword: password, // to be fixed
-      }
-    );
-    // .pipe(
-    //   catchError(this.handleError),
-    //   tap((resData) => {
-    //     this.handleAuthentication(
-    //       resData.email,
-    //       resData.localId,
-    //       resData.idToken,
-    //       +resData.expiresIn
-    //     );
-    //   })
-    // );
+        confirmPassword: confirmPassword,
+      })
+      .pipe(catchError(this.handleError));
   }
 
   login(email: string, password: string) {
@@ -51,9 +45,10 @@ export class AuthService {
         }
       )
       .pipe(
+        catchError(this.handleError),
         tap((authToken) => {
-          localStorage.setItem("authToken", authToken);
-          this.token.next(authToken)
+          localStorage.setItem('authToken', authToken);
+          this.token.next(authToken);
         })
       );
   }
@@ -65,16 +60,43 @@ export class AuthService {
       return;
     }
 
-    this.token.next(authToken);
+    if (authToken) {
+      this.token.next(authToken);
+      const decoded: any = jwtDecode(authToken);
+
+      let expDate = new Date(0);
+      expDate.setUTCSeconds(decoded.exp);
+
+      const expirationDuration =
+        new Date(expDate).getTime() - new Date().getTime();
+      this.autoLogout(expirationDuration);
+    }
   }
 
   logout() {
     this.token.next(null);
     this.router.navigate(['/login']);
     localStorage.removeItem('authToken');
+    if (this.tokenExpirationTimer) {
+      clearTimeout(this.tokenExpirationTimer);
+    }
   }
 
-  getAccountInfo(): Observable<User> {  // uses token
+  autoLogout(expirationDuration: number) {
+    this.tokenExpirationTimer = setTimeout(() => {
+      this.logout();
+    }, expirationDuration);
+  }
+
+  getAccountInfo(): Observable<User> {
     return this.http.get<User>(`${environment.apiUrl}/${this.url}/account`);
+  }
+
+  private handleError(errorRes: HttpErrorResponse) {
+    let errorMessage = 'An unknown error occurred!';
+    if (!errorRes.error) {
+      return throwError(errorMessage);
+    }
+    return throwError(errorRes.error);
   }
 }

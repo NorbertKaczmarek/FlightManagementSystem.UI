@@ -10,6 +10,8 @@ import { AuthService } from '../auth.service';
   styleUrl: './login.component.css',
 })
 export class LoginComponent {
+  error: string = null;
+
   constructor(private authService: AuthService, private router: Router) {}
 
   onSubmit(form: NgForm) {
@@ -20,8 +22,10 @@ export class LoginComponent {
     this.authService.login(email, password).subscribe((token: string) => {
       localStorage.setItem('authToken', token);
       this.router.navigate(['flight']);
+    },
+    (errorMessage) => {
+      this.error = errorMessage;
     });
-
     form.reset();
   }
 }

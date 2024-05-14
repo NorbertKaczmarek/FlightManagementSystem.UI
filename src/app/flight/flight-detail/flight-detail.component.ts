@@ -13,6 +13,7 @@ import { Title } from '@angular/platform-browser';
 export class FlightDetailComponent implements OnInit {
   flight?: Flight = null;
   id: number;
+  error: string = null;
 
   constructor(
     private flightService: FlightService,
@@ -48,7 +49,10 @@ export class FlightDetailComponent implements OnInit {
   onDeleteFlight() {
     this.flightService.deleteFlight(this.flight).subscribe(() => {
       this.flightService.notifyOther({ refresh: true });
+      this.router.navigate(['/flight']);
+    },
+    (errorMessage: Error) => {
+      this.error = errorMessage.message;
     })
-    this.router.navigate(['/flight']);
   }
 }

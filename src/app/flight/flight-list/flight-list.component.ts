@@ -19,7 +19,6 @@ export class FlightListComponent implements OnInit {
       if (res.refresh) {
         // get your grid data again. Grid will refresh automatically
         this.fetchData();
-        console.log("notifyObservable")
       }
     });
   }
