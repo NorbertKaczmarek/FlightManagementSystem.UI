@@ -1,0 +1,26 @@
+<hr />
+<div class="table">
+  <table class="table table-striped table-sm">
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>numerLotu</th>
+        <th>dataWylotu</th>
+        <th>miejsceWylotu</th>
+        <th>miejscePrzylotu</th>
+        <th>typSamolotu</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr 
+        app-flight-item
+        *ngFor="let flightEl of flights; let i = index"
+          [flight]="flightEl"
+          (flightToUpdate)="editFlight($event)"
+          [index]="flightEl.id"
+          [routerLink]=[flightEl.id]
+      >
+      </tr>
+    </tbody>
+  </table>
+</div>

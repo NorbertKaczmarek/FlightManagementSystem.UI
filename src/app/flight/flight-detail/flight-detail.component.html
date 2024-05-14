@@ -1,0 +1,51 @@
+<div *ngIf="flight">
+  <br />
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="btn-group">
+        <button
+          type="button"
+          class="btn btn-primary dropdown-toggle"
+          data-bs-toggle="dropdown"
+        >
+          Manage Flight <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+          <li class="dropdown-item">
+            <a style="cursor: pointer" (click)="onEditFlight()">Edit Flight</a>
+          </li>
+          <li class="dropdown-item">
+            <a style="cursor: pointer" (click)="onDeleteFlight()"
+              >Delete Flight</a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <hr />
+  <div class="row">
+    <div class="col-xs-12">
+      <h1>{{ flight.id }}</h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12">numerLotu: {{ flight.numerLotu }}</div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12">dataWylotu: {{ flight.dataWylotu }}</div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12">miejsceWylotu: {{ flight.miejsceWylotu }}</div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12">miejscePrzylotu: {{ flight.miejscePrzylotu }}</div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12" [ngSwitch]="flight.typSamolotu">
+      <p *ngSwitchCase="0">typSamolotu: Embraer</p>
+      <p *ngSwitchCase="1">typSamolotu: Boeing</p>
+      <p *ngSwitchCase="2">typSamolotu: Airbus</p>
+    </div>
+  </div>
+</div>
