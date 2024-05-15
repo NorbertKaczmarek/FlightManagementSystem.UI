@@ -8,4 +8,4 @@
 
 <h2>Project Screenshots:</h2>
 
-<img src="https://github.com/NorbertKaczmarek/FlightManagementSystem.UI/blob/master/demo_screenshot.png?raw=true" alt="project-screenshot" width="100%" height="400/">
+<img src="https://github.com/NorbertKaczmarek/FlightManagementSystem.UI/blob/main/demo_screenshot.png?raw=true" alt="project-screenshot" width="100%" height="400/">
