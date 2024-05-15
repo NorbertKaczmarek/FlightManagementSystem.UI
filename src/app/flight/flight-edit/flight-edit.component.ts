@@ -27,7 +27,7 @@ export class FlightEditComponent {
     private router: Router,
     private titleService: Title
   ) {}
-
+  
   ngOnInit() {
     this.route.params.subscribe((params: Params) => {
       this.id = +params['id'];

@@ -22,10 +22,11 @@ export class LoginComponent {
     this.authService.login(email, password).subscribe((token: string) => {
       localStorage.setItem('authToken', token);
       this.router.navigate(['flight']);
+      form.reset();
     },
     (errorMessage) => {
       this.error = errorMessage;
+      form.controls['password'].reset()
     });
-    form.reset();
   }
 }
