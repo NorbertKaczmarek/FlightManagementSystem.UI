@@ -50,20 +50,29 @@ export class FlightEditComponent {
   }
 
   onSubmit() {
+    const dataWylotu = this.flightForm.value['dataWylotu'];
+    const czasWylotu = this.flightForm.value['czasWylotu'];
+
+    let editedFlight = new Flight(
+      this.flightForm.value['numerLotu'],
+      new Date(`${dataWylotu}T${czasWylotu}`),
+      this.flightForm.value['miejsceWylotu'],
+      this.flightForm.value['miejscePrzylotu'],
+      this.flightForm.value['typSamolotu']
+    );
+
     if (this.editMode) {
-      this.flightService
-        .updateFlightWithId(this.id, this.flightForm.value)
-        .subscribe(
-          () => {
-            this.flightService.notifyOther({ refresh: true });
-            this.onCancel();
-          },
-          (errorMessage: Error) => {
-            this.error = errorMessage.message;
-          }
-        );
+      this.flightService.updateFlightWithId(this.id, editedFlight).subscribe(
+        () => {
+          this.flightService.notifyOther({ refresh: true });
+          this.onCancel();
+        },
+        (errorMessage: Error) => {
+          this.error = errorMessage.message;
+        }
+      );
     } else {
-      this.flightService.createFlight(this.flightForm.value).subscribe(
+      this.flightService.createFlight(editedFlight).subscribe(
         (res: HttpResponse<any>) => {
           let createdIdString: string = res.headers.get('location');
           this.router.navigate([createdIdString]);
@@ -84,9 +93,18 @@ export class FlightEditComponent {
     this.router.navigate(['../'], { relativeTo: this.route });
   }
 
+  private getDateFromDate(initialDate: Date) {
+    return initialDate.toISOString().slice(0, 10); // "YYYY-MM-DD"
+  }
+
+  private getTimeFromDate(initialDate: Date) {
+    return initialDate.toTimeString().slice(0, 5); // "HH:mm"
+  }
+
   private initForm() {
     let numerLotu = null;
-    let dataWylotu = '';
+    let dataWylotu = this.getDateFromDate(new Date());
+    let czasWylotu = this.getTimeFromDate(new Date());
     let miejsceWylotu = '';
     let miejscePrzylotu = '';
     let typSamolotu = null;
@@ -95,7 +113,8 @@ export class FlightEditComponent {
       this.fetchFlight();
       if (this.flight) {
         numerLotu = this.flight.numerLotu;
-        dataWylotu = this.flight.dataWylotu;
+        dataWylotu = this.getDateFromDate(new Date(this.flight.dataWylotu));
+        czasWylotu = this.getTimeFromDate(new Date(this.flight.dataWylotu));
         miejsceWylotu = this.flight.miejsceWylotu;
         miejscePrzylotu = this.flight.miejscePrzylotu;
         typSamolotu = this.flight.typSamolotu;
@@ -105,6 +124,7 @@ export class FlightEditComponent {
     this.flightForm = new FormGroup({
       numerLotu: new FormControl(numerLotu, Validators.required),
       dataWylotu: new FormControl(dataWylotu, Validators.required),
+      czasWylotu: new FormControl(czasWylotu, Validators.required),
       miejsceWylotu: new FormControl(miejsceWylotu, Validators.required),
       miejscePrzylotu: new FormControl(miejscePrzylotu, Validators.required),
       typSamolotu: new FormControl(typSamolotu, Validators.required),
@@ -121,22 +141,52 @@ export class FlightEditComponent {
     this.flightForm = new FormGroup({
       numerLotu: new FormControl(Math.floor(Math.random() * 100)),
       dataWylotu: new FormControl(
-        new Date(
-          2024,
-          Math.floor(Math.random() * 12),
-          Math.floor(Math.random() * 30),
-          Math.floor(Math.random() * 24),
-          Math.floor(Math.random() * 60),
-          Math.floor(Math.random() * 60)
-        ).toISOString()
+        this.getDateFromDate(
+          new Date(
+            2010 + Math.floor(Math.random() * 14),
+            Math.floor(Math.random() * 12),
+            Math.floor(Math.random() * 30)
+          )
+        )
       ),
+      czasWylotu: new FormControl(
+        this.getTimeFromDate(
+          new Date(
+            2024,
+            1,
+            1,
+            Math.floor(Math.random() * 24),
+            Math.floor(Math.random() * 60)
+          )
+        )
+      ),
+      // czasWylotu: new FormControl(
+      //   this.getTimeFromDate(new Date())
+      // ),
       miejsceWylotu: new FormControl(
-        'Miejsce wylotu ' + Math.floor(Math.random() * 100)
+        polishCitiesWithAirports[
+          Math.floor(Math.random() * polishCitiesWithAirports.length)
+        ]
       ),
       miejscePrzylotu: new FormControl(
-        'Miejsce przylotu ' + Math.floor(Math.random() * 100)
+        polishCitiesWithAirports[
+          Math.floor(Math.random() * polishCitiesWithAirports.length)
+        ]
       ),
       typSamolotu: new FormControl(PlaneType[Math.floor(Math.random() * 3)]),
     });
   }
 }
+
+const polishCitiesWithAirports = [
+  'Warszawa',
+  'Kraków',
+  'Gdańsk',
+  'Wrocław',
+  'Poznań',
+  'Szczecin',
+  'Łódź',
+  'Katowice',
+  'Gdynia',
+  'Częstochowa',
+];
