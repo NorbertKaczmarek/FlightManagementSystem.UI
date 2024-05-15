@@ -1,4 +1,4 @@
-enum PlaneType {
+export enum PlaneType {
     Embraer,
     Boeing,
     Airbus,

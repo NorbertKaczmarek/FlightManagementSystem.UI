@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { FlightService } from '../flight.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Flight } from '../flight.model';
+import { Flight, PlaneType } from '../flight.model';
 import { Observable, switchMap } from 'rxjs';
 import { Title } from '@angular/platform-browser';
 import { HttpResponse } from '@angular/common/http';
@@ -27,7 +27,7 @@ export class FlightEditComponent {
     private router: Router,
     private titleService: Title
   ) {}
-  
+
   ngOnInit() {
     this.route.params.subscribe((params: Params) => {
       this.id = +params['id'];
@@ -136,7 +136,7 @@ export class FlightEditComponent {
       miejscePrzylotu: new FormControl(
         'Miejsce przylotu ' + Math.floor(Math.random() * 100)
       ),
-      typSamolotu: new FormControl(Math.floor(Math.random() * 3)),
+      typSamolotu: new FormControl(PlaneType[Math.floor(Math.random() * 3)]),
     });
   }
 }
