@@ -9,10 +9,12 @@ import { FlightService } from '../flight.service';
 })
 export class FlightListComponent implements OnInit {
   @Input() flights: Flight[] = [];
+  isLoading = false;
 
   constructor(private flightService: FlightService) {}
 
   ngOnInit(): void {
+    this.isLoading = true;
     this.fetchData();
 
     this.flightService.notifyObservable$.subscribe((res) => {
@@ -26,6 +28,9 @@ export class FlightListComponent implements OnInit {
   fetchData() {
     this.flightService
       .getFlights()
-      .subscribe((result: Flight[]) => (this.flights = result));
+      .subscribe((result: Flight[]) => {
+        this.flights = result;
+        this.isLoading = false;
+      });
   }
 }
