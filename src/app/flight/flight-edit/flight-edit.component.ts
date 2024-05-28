@@ -139,7 +139,7 @@ export class FlightEditComponent {
 
   onFeedTestData() {
     this.flightForm = new FormGroup({
-      numerLotu: new FormControl(Math.floor(Math.random() * 100)),
+      numerLotu: new FormControl(Math.floor(Math.random() * 10 * Math.random() * 100)),
       dataWylotu: new FormControl(
         this.getDateFromDate(
           new Date(
@@ -160,9 +160,6 @@ export class FlightEditComponent {
           )
         )
       ),
-      // czasWylotu: new FormControl(
-      //   this.getTimeFromDate(new Date())
-      // ),
       miejsceWylotu: new FormControl(
         polishCitiesWithAirports[
           Math.floor(Math.random() * polishCitiesWithAirports.length)
