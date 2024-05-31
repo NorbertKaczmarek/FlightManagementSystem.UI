@@ -69,6 +69,18 @@ export class FlightService {
         errorMessage = 'You must be logged in to do it.';
     }
 
+    if (errorRes.error) { 
+      if (errorRes.error.errors) {
+        errorMessage = '';
+        let errors = Object.values(errorRes.error.errors);
+        errors.forEach((error) => {
+          errorMessage += error;
+        });
+      } else {
+        errorMessage = errorRes.error;
+      }
+    }
+
     return throwError(() => new Error(errorMessage));
   }
 }
