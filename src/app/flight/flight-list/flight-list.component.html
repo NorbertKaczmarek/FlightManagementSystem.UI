@@ -1,29 +1,89 @@
-<hr />
-<div *ngIf="isLoading" style="text-align: center;">
+<br />
+<div *ngIf="isLoading" style="text-align: center">
   <p>Loading...</p>
 </div>
+<div class="d-flex justify-content-between p-2">
+  <div class="col-xs-3 col-sm-auto">
+    <button class="btn btn-success" (click)="initNewFlight()">
+      Create New Flight
+    </button>
+  </div>
+  <div class="mb-3 row justify-content-md-evenly">
+    <label for="table-complete-search" class="col-xs-3 col-sm-auto col-form-label"
+      >Full text search:</label
+    >
+    <div class="col-xs-3 col-sm-auto">
+      <input
+        id="table-complete-search"
+        type="text"
+        class="form-control"
+        name="searchTerm"
+        [(ngModel)]="SearchPhrase"
+        (input)="onQueryChange()"
+      />
+    </div>
+    <div class="col-xs-3 col-sm-auto">
+      <button class="btn btn-primary" (click)="initSearch()">Search</button>
+    </div>
+  </div>
+</div>
+<hr />
 <div class="table" *ngIf="!isLoading">
   <table class="table table-striped table-sm">
     <thead>
       <tr>
-        <th>Numer lotu</th>
-        <th>Data wylotu</th>
-        <th>Czas wylotu</th>
-        <th>Miejsce wylotu</th>
-        <th>Miejsce przylotu</th>
-        <th>Typ samolotu</th>
+        <th (click)="Sort('NumerLotu')">Numer lotu</th>
+        <th (click)="Sort('DataWylotu')">Data wylotu</th>
+        <th (click)="Sort('DataWylotu')">Czas wylotu</th>
+        <th (click)="Sort('MiejsceWylotu')">Miejsce wylotu</th>
+        <th (click)="Sort('MiejscePrzylotu')">Miejsce przylotu</th>
+        <th (click)="Sort('TypSamolotu')">Typ samolotu</th>
       </tr>
     </thead>
     <tbody>
-      <tr 
+      <tr
         app-flight-item
         *ngFor="let flightEl of flights; let i = index"
-          [flight]="flightEl"
-          (flightToUpdate)="editFlight($event)"
-          [index]="flightEl.id"
-          [routerLink]=[flightEl.id]
-      >
+        [flight]="flightEl"
+        (flightToUpdate)="editFlight($event)"
+        [index]="flightEl.id"
+        [routerLink]="[flightEl.id]"
+      ></tr>
+      <tr *ngIf="flights.length == 0">
+        <td colspan="6" style="text-align: center">No flights found</td>
       </tr>
     </tbody>
   </table>
+</div>
+<div class="d-flex justify-content-between p-2" *ngIf="FlightResponse">
+  <select
+    class="form-select bg-light"
+    style="width: auto"
+    name="PageNumber"
+    [(ngModel)]="PageNumber"
+    (change)="onQueryChange()"
+  >
+    <option *ngFor="let page of totalPagesArray" [ngValue]="page">
+      {{ page }}
+    </option>
+  </select>
+
+  <select
+    class="form-select bg-light"
+    style="width: auto"
+    name="PageSize"
+    [(ngModel)]="PageSize"
+    (change)="onQueryChange()"
+  >
+    <option [ngValue]="5">5 items per page</option>
+    <option [ngValue]="10">10 items per page</option>
+    <option [ngValue]="15">15 items per page</option>
+  </select>
+
+  <button class="btn btn-light">
+    Total Pages: {{ FlightResponse.totalPages }}
+  </button>
+  <button class="btn btn-light">
+    Total Items: {{ FlightResponse.totalItemsCount }}
+  </button>
 </div>

@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Flight } from '../flight.model';
-import { FlightService } from '../flight.service';
+import { FlightService, GetFlightResponse } from '../flight.service';
+import { Router, ActivatedRoute } from '@angular/router';
+import { SortDirectionEnum } from '../../app.component';
 
 @Component({
   selector: 'app-flight-list',
@@ -11,7 +13,20 @@ export class FlightListComponent implements OnInit {
   @Input() flights: Flight[] = [];
   isLoading = false;
 
-  constructor(private flightService: FlightService) {}
+  SearchPhrase = '';
+  PageNumber = 1;
+  PageSize = 5;
+  SortBy = 'Id';
+  SortDirection: SortDirectionEnum = SortDirectionEnum.DESC;
+
+  FlightResponse: GetFlightResponse;
+  totalPagesArray: number[] = [];
+
+  constructor(
+    private flightService: FlightService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
     this.isLoading = true;
@@ -19,7 +34,6 @@ export class FlightListComponent implements OnInit {
 
     this.flightService.notifyObservable$.subscribe((res) => {
       if (res.refresh) {
-        // get your grid data again. Grid will refresh automatically
         this.fetchData();
       }
     });
@@ -27,10 +41,49 @@ export class FlightListComponent implements OnInit {
 
   fetchData() {
     this.flightService
-      .getFlights()
-      .subscribe((result: Flight[]) => {
-        this.flights = result;
+      .getFlights(
+        this.SearchPhrase,
+        this.PageNumber,
+        this.PageSize,
+        this.SortBy,
+        this.SortDirection
+      )
+      .subscribe((res) => {
+        this.flights = res.items;
+        this.FlightResponse = res;
         this.isLoading = false;
+
+        this.totalPagesArray = [];
+        for (let i = 1; i <= this.FlightResponse.totalPages; i++) {
+          this.totalPagesArray.push(i);
+        }
       });
+  }
+
+  initSearch() {
+    this.fetchData();
+  }
+
+  Sort(item) {
+    if (this.SortBy == item) {
+      if (this.SortDirection == SortDirectionEnum.ASC) {
+        this.SortDirection = SortDirectionEnum.DESC;
+      } else {
+        this.SortDirection = SortDirectionEnum.ASC;
+      }
+    } else {
+      this.SortBy = item;
+      this.SortDirection = SortDirectionEnum.ASC;
+    }
+
+    this.onQueryChange();
+  }
+
+  initNewFlight() {
+    this.router.navigate(['new'], { relativeTo: this.route });
+  }
+
+  onQueryChange() {
+    this.fetchData();
   }
 }

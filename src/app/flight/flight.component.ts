@@ -8,13 +8,5 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrl: './flight.component.css',
 })
 export class FlightComponent {
-  constructor(
-    private flightService: FlightService,
-    private router: Router,
-    private route: ActivatedRoute
-  ) {}
-
-  initNewFlight() {
-    this.router.navigate(['new'], { relativeTo: this.route });
-  }
+  constructor() {}
 }

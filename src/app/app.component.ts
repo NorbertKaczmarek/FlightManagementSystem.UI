@@ -15,3 +15,8 @@ export class AppComponent implements OnInit {
     this.authService.autoLogin();
   }
 }
+
+export enum SortDirectionEnum {
+  ASC,
+  DESC,
+}
