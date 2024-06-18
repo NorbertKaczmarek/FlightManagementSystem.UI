@@ -20,9 +20,9 @@ export class HeaderComponent {
   ngOnInit(): void {
     this.userSub = this.authService.token.subscribe((token) => {
       this.isAuthenticated = !!token; // !token ? false : true;
-      this.authService.getAccountInfo().subscribe((user: User) => {
-        this.email = user.email;
-      });
+      if (this.isAuthenticated){
+        this.email = localStorage.getItem('email')
+      }
     });
   }
 

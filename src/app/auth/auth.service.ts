@@ -48,6 +48,7 @@ export class AuthService {
         catchError(this.handleError),
         tap((authToken) => {
           localStorage.setItem('authToken', authToken);
+          localStorage.setItem('email', email);
           this.token.next(authToken);
         })
       );
@@ -77,6 +78,7 @@ export class AuthService {
     this.token.next(null);
     this.router.navigate(['/login']);
     localStorage.removeItem('authToken');
+    localStorage.removeItem('email');
     if (this.tokenExpirationTimer) {
       clearTimeout(this.tokenExpirationTimer);
     }
